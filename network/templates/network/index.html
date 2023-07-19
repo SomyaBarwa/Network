@@ -1,0 +1,80 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <h2>All Posts</h2>
+    {% if user.is_authenticated %}
+        <div class="border rounded p-3 form-group">
+            <h4>New Post</h4>
+            <form action="/add_post" method="post">
+                {% csrf_token %}
+                <textarea class="form-control" name="body"></textarea>
+                <button type="submit" class="btn btn-primary mt-2">Post</button>
+            </form>
+        </div>
+    {% endif %}
+    
+    {% for post,like_count,likes in fullposts %}
+        <div class="border rounded p-3 mt-3">
+            <a href="{% url 'profile' post.poster %}"><h4>{{post.poster}}</h4></a>
+            {% if user.is_authenticated %}
+                {% if user == post.poster %}
+                    <!-- Edit btn -->
+                    <button type="button" class="btn btn-outline-primary edit" data-id="{{post.id}}" data-toggle="modal" data-target="#exampleModal{{post.id}}">Edit</button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal{{post.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel_{{post.id}}" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel_{{post.id}}">Edit content</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            </div>
+                            <div class="modal-body">
+                                {{post.post}}
+                            </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+            <h6>{{post.post}}</h6>
+            <p>{{post.datetime}}</p>
+            {% if not likes %}
+                <p><i class="fa fa-heart-o" style="font-size:20px;color:red" onclick="heart('{{post.id}}', this)"></i><span class="ml-2">{{ like_count }}</span></p>
+            {% else %}
+                <p><i class="fa fa-heart" style="font-size:20px;color:red" onclick="heart('{{post.id}}', this)"></i><span class="ml-2">{{ like_count }}</span></p>
+            {% endif %}
+            <p>Comment</p>
+        </div>
+    {% endfor %}
+    <hr>
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo; Previous</a></li>
+            {% endif %}
+
+            {% if page_obj.number > 1 %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a></li>
+            {% endif %}
+
+            <li class="page-item"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+
+            {% if page_obj.number < page_obj.paginator.num_pages %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></li>
+            {% endif %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+{% endblock %}

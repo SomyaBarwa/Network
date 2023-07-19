@@ -1,0 +1,41 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <h2>Followed posts</h2>
+    
+    {% for post in page_obj %}
+        <div class="border rounded p-3 mt-3">
+            <a href="{% url 'profile' post.poster %}"><h4>{{post.poster}}</h4></a>
+            <a href="#">Edit</a>
+            <h6>{{post.post}}</h6>
+            <p>{{post.datetime}}</p>
+            <p>♡ 0</p>
+            <p>Comment</p>
+        </div>
+    {% endfor %}
+    <hr>
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo; Previous</a></li>
+            {% endif %}
+
+            {% if page_obj.number > 1 %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a></li>
+            {% endif %}
+
+            <li class="page-item"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+
+            {% if page_obj.number < page_obj.paginator.num_pages %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></li>
+            {% endif %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+        
+    <scrip
+{% endblock %}
