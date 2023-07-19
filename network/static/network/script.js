@@ -85,6 +85,53 @@ document.querySelectorAll(".edit").forEach(button => {
 });
 */
 
+function edit(post_id,element) {
+    txtbox = element.parentElement;
+    if(element.innerHTML == "Edit") {
+        const text = txtbox.querySelector("pre");
+        const textarea = document.createElement("textarea");
+        textarea.className = "form-control";
+        textarea.value = text.innerHTML;
+        text.replaceWith(textarea);
+        element.innerHTML = "Save";
+
+    }
+    else {
+        const textarea = txtbox.querySelector("textarea")
+        fetch("/edit",{
+            method: "PUT",
+            body: JSON.stringify({id:post_id,
+                                text:textarea.value
+                            })
+        })
+        .then(response => response.text())
+        .then(data => {
+            const text = document.createElement("pre");
+            text.style = "font-size: large; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;"
+            textarea.replaceWith(text);
+            element.innerHTML = "Edit";
+            console.log(text);            
+            text.innerHTML = textarea.value;
+        });
+    }
+}
+
+function deletepost(post_id,element) {
+    fetch("/delete",{
+        method: "PUT",
+        body: JSON.stringify({id:post_id})
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(element.parentElement);
+        element.parentElement.remove();
+    });
+}
+
+
+
+
+
 function heart(post_id,element) {
     like = element.parentElement;
     i = like.querySelector("i");

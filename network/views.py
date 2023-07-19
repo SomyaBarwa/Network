@@ -19,15 +19,17 @@ def index(request):
     paginator = Paginator(posts, 10)
     page_num = request.GET.get("page")
     page_obj = paginator.get_page(page_num)
-    
+
 
     fullposts=[]
-    #print(posts[0].like_set.all().count())
-    for post in page_obj:
-        fullposts.append([post, post.like_set.all().count(),True if Like.objects.filter(liker=request.user, comment=post) else False])
+    if request.user.is_authenticated:
+        for post in page_obj:
+            fullposts.append([post, post.like_set.all().count(),True if Like.objects.filter(liker=request.user, comment=post) else False])
+    else:
+        for post in page_obj:
+            fullposts.append([post, post.like_set.all().count(), False])
 
     print(fullposts)
-    #print(likes)
 
     return render(request, "network/index.html", {
         "fullposts": fullposts,
@@ -100,17 +102,24 @@ def add_post(request):
 @login_required(login_url="/login")
 def profile(request, poster):
     poster = User.objects.get(username=poster)
-    posts = poster.posts.all()
+    posts = poster.posts.all().order_by("-datetime")
     follower_count = poster.followed_by.all().count()
     following_count = poster.follows.all().count()
     user_follow_poster = Follow.objects.filter(follower=request.user, following=poster)
+
+
+    fullposts=[]
+    for post in posts:
+        fullposts.append([post, post.like_set.all().count(),True if Like.objects.filter(liker=request.user, comment=post) else False])
+
 
     return render(request, "network/profile.html", {
         "poster": poster,
         "posts": posts,
         "followers": follower_count,
         "followings":following_count,
-        "user_follows": user_follow_poster
+        "user_follows": user_follow_poster,
+        "fullposts": fullposts
     })
 
 
@@ -140,8 +149,13 @@ def follow(request):
         page_num = request.GET.get("page")
         page_obj = paginator.get_page(page_num)  
         
+        fullposts=[]
+        for post in page_obj:
+            fullposts.append([post, post.like_set.all().count(),True if Like.objects.filter(liker=request.user, comment=post) else False])
+
         return render(request, "network/following.html", {
-            "page_obj": page_obj
+            "page_obj": page_obj,
+            "fullposts": fullposts
         })
 
 @csrf_exempt
@@ -168,5 +182,11 @@ def like(request):
             Like.objects.filter(liker=liker, comment=post).delete()
         return HttpResponse(status=204)
 
+@csrf_exempt
+def delete(request):
+    if request.method == "PUT":
+        data = json.loads(request.body)
+        Post.objects.filter(id=data["id"]).delete()
+        return HttpResponse(status=204)
         
     
