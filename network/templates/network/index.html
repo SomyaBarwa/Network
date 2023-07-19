@@ -15,7 +15,10 @@
     
     {% for post,like_count,likes in fullposts %}
         <div class="border rounded p-3 mt-3">
-            <a href="{% url 'profile' post.poster %}"><h4>{{post.poster}}</h4></a>
+            <div style="display: flex; align-items: center;">  
+                <img src="{{post.poster.profile.image.url}}" class="rounded-circle mr-3" style="width: 50px; height: 50px;">
+                <a href="{% url 'profile' post.poster %}"><h4>{{post.poster}}</h4></a>
+            </div>
             <hr>
             {% if user.is_authenticated %}
                 {% if user == post.poster %}
