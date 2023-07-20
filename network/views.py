@@ -9,16 +9,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
-from django import forms
 
 
-from .models import User, Post, Follow, Like, Profile
-
-
-class ProfileUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['image']
+from .models import *
+from .forms import *
 
 
 def index(request):
@@ -208,10 +202,26 @@ def delete(request):
     
 def post(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
+    comment = CommentForm() 
+    comments = post.my_comment_section.all()
 
     return render(request, "network/post.html", {
         "post": post,
         "like_count": post.like_set.all().count(),
-        "likes": True if Like.objects.filter(liker=request.user, comment=post) else False
+        "likes": True if Like.objects.filter(liker=request.user, comment=post) else False,
+        "comment": comment,
+        'comments': comments
     })
+
+def comment(request, post_id):
+    if request.method == "POST":
+        posti = get_object_or_404(Post, pk=post_id)
+     
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            commie = form.save(commit=False)
+            commie.post = posti
+            commie.commenter = request.user
+            commie.save()
+            return HttpResponseRedirect(reverse(post,args=[post_id]))
     

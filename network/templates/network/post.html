@@ -6,7 +6,10 @@
     </a>
     
     <div class="border rounded p-3 mt-3">
-        <a href="{% url 'profile' post.poster %}"><h4>{{post.poster}}</h4></a>
+        <div style="display: flex; align-items: center;">  
+            <img src="{{post.poster.profile.image.url}}" class="rounded-circle mr-3" style="width: 50px; height: 50px;">
+            <a href="{% url 'profile' post.poster %}"><h4>{{post.poster}}</h4></a>
+        </div>        
         <hr>
         {% if user.is_authenticated %}
             {% if user == post.poster %}
@@ -24,6 +27,34 @@
             <p><i class="fa fa-heart" style="font-size:20px;color:red" onclick="heart('{{post.id}}', this)"></i><span class="ml-2">{{ like_count }}</span></p>
         {% endif %}
     </div>
+
+    
+    <!--Comments section-->
+    <div class="border rounded p-3 mt-3">
+        <h4>Comments:</h4>
+        {% for comment in comments %}
+            <div class="border rounded p-2 mt-2">
+                <div style="display: flex; align-items: center;">  
+                    <img src="{{post.poster.profile.image.url}}" class="rounded-circle mr-3" style="width: 30px; height: 30px;">
+                    <a href="{% url 'profile' post.poster %}"><h5>{{post.poster}}</h5></a>
+                </div>    
+                <hr>            
+                <p>{{ comment.comment }}</p>
+                <p>{{ comment.created_on }}</p>
+            </div>
+        {% endfor %}
+
+
+        <!-- Add comment form -->
+        <form action="{% url 'comment' post.id %}" method="post" style="margin-top: 1.3em;">
+            <label for="comment-text" style="font-size:x-large;">Add a comment:</label>
+            {% csrf_token %}    
+            {{ comment.as_p }}
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Add Comment</button>
+        </form>
+
+    </div>
     <hr>
+
         
 {% endblock %}

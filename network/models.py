@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -38,3 +39,14 @@ class Follow(models.Model):
         return f"{self.follower} follows {self.following}"
     
     
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="my_comment_section")
+    commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="my_comment")
+    comment = models.TextField()
+    created_on = models.DateTimeField(default=timezone.now)
+    
+    class Meta:
+        ordering = ['created_on']
+
+    def __str__(self):
+        return 'Comment {} by {}'.format(self.comment, self.commenter)
