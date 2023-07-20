@@ -51,7 +51,7 @@
 
    
     {% for post,like_count,likes in fullposts %}
-        <div class="border rounded p-3 mt-3">
+        <div class="border rounded p-3 mt-3" style="cursor: pointer;" onclick="window.location='/post/'+ '{{post.id}}';">
             <a href="{% url 'profile' post.poster %}"><h4>{{post.poster}}</h4></a>
             <hr>
             {% if user.is_authenticated %}
@@ -69,7 +69,6 @@
             {% else %}
                 <p><i class="fa fa-heart" style="font-size:20px;color:red" onclick="heart('{{post.id}}', this)"></i><span class="ml-2">{{ like_count }}</span></p>
             {% endif %}
-            <p>Comment</p>
         </div>
     {% endfor %}
     <hr>

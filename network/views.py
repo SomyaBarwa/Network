@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
@@ -36,8 +36,6 @@ def index(request):
     else:
         for post in page_obj:
             fullposts.append([post, post.like_set.all().count(), False])
-
-    print(fullposts)
 
     return render(request, "network/index.html", {
         "fullposts": fullposts,
@@ -117,6 +115,7 @@ def profile(request, poster):
             return redirect('profile',poster=poster.username)
     else:
         p_form = ProfileUpdateForm(instance=request.user)
+
         poster = User.objects.get(username=poster)
         posts = poster.posts.all().order_by("-datetime")
         follower_count = poster.followed_by.all().count()
@@ -206,4 +205,13 @@ def delete(request):
         Post.objects.filter(id=data["id"]).delete()
         return HttpResponse(status=204)
         
+    
+def post(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+
+    return render(request, "network/post.html", {
+        "post": post,
+        "like_count": post.like_set.all().count(),
+        "likes": True if Like.objects.filter(liker=request.user, comment=post) else False
+    })
     

@@ -1,0 +1,29 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <a onclick="history.back()">
+        <button type="button" class="btn btn-outline-secondary">Back to main section</button> 
+    </a>
+    
+    <div class="border rounded p-3 mt-3">
+        <a href="{% url 'profile' post.poster %}"><h4>{{post.poster}}</h4></a>
+        <hr>
+        {% if user.is_authenticated %}
+            {% if user == post.poster %}
+                <!-- Edit btn -->
+                <button type="button" class="btn btn-outline-primary my-2" onclick="edit('{{post.id}}',this)">Edit</button>
+                <button type="button" class="btn btn-outline-primary my-2" onclick="deletepost('{{post.id}}',this)" style="float: right;">Delete</button>
+
+            {% endif %}
+        {% endif %}
+        <pre style="font-size: large; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">{{ post.post }}</pre>
+        <p>{{post.datetime}}</p>
+        {% if not likes %}
+            <p><i class="fa fa-heart-o" style="font-size:20px;color:red" onclick="heart('{{post.id}}', this)"></i><span class="ml-2">{{ like_count }}</span></p>
+        {% else %}
+            <p><i class="fa fa-heart" style="font-size:20px;color:red" onclick="heart('{{post.id}}', this)"></i><span class="ml-2">{{ like_count }}</span></p>
+        {% endif %}
+    </div>
+    <hr>
+        
+{% endblock %}
