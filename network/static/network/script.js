@@ -10,7 +10,7 @@ try {
                 method: "PUT",
                 body: JSON.stringify({follower:document.querySelector(".nav-link").querySelector("strong").innerHTML,
                                     following:document.getElementById("following").innerHTML,
-                                    likes: true
+                                    follows: true
                                 })
             })
             .then(response => response.text())
@@ -26,7 +26,7 @@ try {
                 method: "PUT",
                 body: JSON.stringify({follower:document.querySelector(".nav-link").querySelector("strong").innerHTML,
                                     following:document.getElementById("following").innerHTML,
-                                    likes: false
+                                    follows: false
                                 })
             })
             .then(response => response.text())

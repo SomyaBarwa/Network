@@ -1,16 +1,24 @@
 import json
+from pyexpat.errors import messages
 
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
+from django import forms
 
 
-from .models import User, Post, Follow, Like
+from .models import User, Post, Follow, Like, Profile
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['image']
 
 
 def index(request):
@@ -101,16 +109,24 @@ def add_post(request):
 
 @login_required(login_url="/login")
 def profile(request, poster):
-    poster = User.objects.get(username=poster)
-    posts = poster.posts.all().order_by("-datetime")
-    follower_count = poster.followed_by.all().count()
-    following_count = poster.follows.all().count()
-    user_follow_poster = Follow.objects.filter(follower=request.user, following=poster)
+    if request.method == 'POST':
+        poster = User.objects.get(username=poster)
+        p_form = ProfileUpdateForm(request.POST,request.FILES,instance=request.user.profile)
+        if p_form.is_valid():
+            p_form.save()
+            return redirect('profile',poster=poster.username)
+    else:
+        p_form = ProfileUpdateForm(instance=request.user)
+        poster = User.objects.get(username=poster)
+        posts = poster.posts.all().order_by("-datetime")
+        follower_count = poster.followed_by.all().count()
+        following_count = poster.follows.all().count()
+        user_follow_poster = Follow.objects.filter(follower=request.user, following=poster)
 
 
-    fullposts=[]
-    for post in posts:
-        fullposts.append([post, post.like_set.all().count(),True if Like.objects.filter(liker=request.user, comment=post) else False])
+        fullposts=[]
+        for post in posts:
+            fullposts.append([post, post.like_set.all().count(),True if Like.objects.filter(liker=request.user, comment=post) else False])
 
 
     return render(request, "network/profile.html", {
@@ -119,7 +135,8 @@ def profile(request, poster):
         "followers": follower_count,
         "followings":following_count,
         "user_follows": user_follow_poster,
-        "fullposts": fullposts
+        "fullposts": fullposts,
+        "p_form": p_form 
     })
 
 
