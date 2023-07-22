@@ -6,6 +6,7 @@
         <title>{% block title %}Social Network{% endblock %}</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://kit.fontawesome.com/776f85e0bc.js" crossorigin="anonymous"></script>
         <link href="{% static 'network/styles.css' %}" rel="stylesheet">
     </head>
     <body>
@@ -39,7 +40,17 @@
                     </li>
                 {% endif %}
               </ul>
+
             </div>
+            <ul class="navbar-nav ml-auto">
+                <form action="{% url 'search' %}" method="get" class="form-inline">
+                        <li class="nav-item">
+                            <input type="text" class="form-control" placeholder="Username" name="q" value="{{ request.GET.query }}">
+                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><i class="fas fa-search"></i></button>
+                        </li>
+                </form>
+            </ul>
+
           </nav>
         
         <div class="body">

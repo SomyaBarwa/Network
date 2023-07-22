@@ -11,18 +11,26 @@
                 <img src="{{poster.profile.image.url}}" class="rounded my-2" style="width: 200px; height: 200px;">
             </div>
 
+            <p class="text-muted h4 my-3">{{poster.profile.bio}}</p>
+
             {% if user.is_authenticated %}
                 {% if poster == request.user  %}
-                    <div class="row justify-content-center">
-                        <form method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="row" style="padding-left: 80px;">
-                                {{ p_form.as_p }}
-                            </div>
-            
-                            <button type="submit" class="btn btn-dark btn">Upload</button>
-                            <button type="reset" class="btn btn-dark btn">Reset</button>
-                        </form>
+                    <div class="text-center">
+                    <button type="button" class="btn btn-secondary mt-4" onclick="showupdateform(this)">Update profile</button>
+                    </div>
+
+                    <div class="border rounded p-3 mt-3" id="update_profile" style="display: none;">
+                        <div class="justify-content-center" >
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    {{ p_form }}
+                                </div>
+                
+                                <button type="submit" class="btn btn-dark btn">Upload</button>
+                                <button type="reset" class="btn btn-dark btn">Reset</button>
+                            </form>
+                        </div>
                     </div>
                 {% endif %}
             {% endif %}
@@ -35,8 +43,8 @@
 
     <div class="container">
         <div class="row justify-content-center text-center">
-            <div class="col-2 "><span class="lead">Followers: </span><span id="followercount" class="h5">{{followers}}</span></div>
-            <div class="col-2 "><span class="lead">Following: </span><span id="followingcount" class="h5">{{followings}}</span></div>
+            <div class="col-4" style="text-align: end;"><span class="lead">Followers: </span><span id="followercount" class="h5">{{followers}}</span></div>
+            <div class="col-4" style="text-align:start"><span class="lead">Following: </span><span id="followingcount" class="h5">{{followings}}</span></div>
         </div>
         <div class="row justify-content-center mt-4">
             {% if poster != request.user %}
@@ -51,26 +59,28 @@
 
    
     {% for post,like_count,likes in fullposts %}
-        <div class="border rounded p-3 mt-3" style="cursor: pointer;" onclick="window.location='/post/'+ '{{post.id}}';">
+        <div class="border rounded p-3 mt-3">
             <div style="display: flex; align-items: center;">  
                 <img src="{{post.poster.profile.image.url}}" class="rounded-circle mr-3" style="width: 50px; height: 50px;">
                 <a href="{% url 'profile' post.poster %}"><h4>{{post.poster}}</h4></a>
             </div>
             <hr>
-            {% if user.is_authenticated %}
-                {% if user == post.poster %}
-                    <!-- Edit btn -->
-                    <button type="button" class="btn btn-outline-primary my-2" onclick="edit('{{post.id}}',this)">Edit</button>
-                    <button type="button" class="btn btn-outline-primary my-2" onclick="deletepost('{{post.id}}',this)" style="float: right;">Delete</button>
 
-                {% endif %}
-            {% endif %}
             <pre style="font-size: large; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">{{ post.post }}</pre>
             <p>{{post.datetime}}</p>
             {% if not likes %}
-                <p><i class="fa fa-heart-o" style="font-size:20px;color:red" onclick="heart('{{post.id}}', this)"></i><span class="ml-2">{{ like_count }}</span></p>
+                <i class="fa fa-heart-o" style="font-size:20px;color:red" onclick="heart('{{post.id}}', this)"></i><span class="ml-2">{{ like_count }}</span>
             {% else %}
-                <p><i class="fa fa-heart" style="font-size:20px;color:red" onclick="heart('{{post.id}}', this)"></i><span class="ml-2">{{ like_count }}</span></p>
+                <i class="fa fa-heart" style="font-size:20px;color:red" onclick="heart('{{post.id}}', this)"></i><span class="ml-2">{{ like_count }}</span>
+            {% endif %}
+
+            <i class="fa-regular fa-comment fa-lg mx-2" style="cursor: pointer; font-size: 20px;" onclick="window.location='post/'+ '{{post.id}}';"></i>
+
+            {% if user.is_authenticated %}
+            {% if user == post.poster %}
+                <i class="fa-solid fa-pen-to-square mx-2" onclick="edit('{{post.id}}',this)", style="cursor: pointer; font-size: 20px;"></i>
+                <i class="fa fa-trash mx-2" onclick="deletepost('{{post.id}}',this)" style="cursor: pointer; font-size: 20px;"></i>
+            {% endif %}
             {% endif %}
         </div>
     {% endfor %}

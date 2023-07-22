@@ -20,22 +20,22 @@
                 <a href="{% url 'profile' post.poster %}"><h4>{{post.poster}}</h4></a>
             </div>
             <hr>
-            {% if user.is_authenticated %}
-                {% if user == post.poster %}
-                    <!-- Edit btn -->
-                    <button type="button" class="btn btn-outline-primary my-2" onclick="edit('{{post.id}}',this)">Edit</button>
-                    <button type="button" class="btn btn-outline-primary my-2" onclick="deletepost('{{post.id}}',this)" style="float: right;">Delete</button>
-
-                {% endif %}
-            {% endif %}
             <pre style="font-size: large; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">{{ post.post }}</pre>
             <p>{{post.datetime}}</p>
             {% if not likes %}
-                <span><i class="fa fa-heart-o" style="font-size:20px;color:red" onclick="heart('{{post.id}}', this)"></i><span class="ml-2">{{ like_count }}</span></span>
+                <i class="fa fa-heart-o" style="cursor: pointer; font-size:20px;color:red" onclick="heart('{{post.id}}', this)"></i><span class="ml-2">{{ like_count }}</span>
             {% else %}
-                <span><i class="fa fa-heart" style="font-size:20px;color:red" onclick="heart('{{post.id}}', this)"></i><span class="ml-2">{{ like_count }}</span></span>
+                <i class="fa fa-heart" style="cursor: pointer; font-size:20px;color:red" onclick="heart('{{post.id}}', this)"></i><span class="ml-2">{{ like_count }}</span>
             {% endif %}
-            <span class="fa fa-comment fa-lg ml-2" style="cursor: pointer; transform: translateY(-3px);" onclick="window.location='post/'+ '{{post.id}}';"></span>
+
+            <i class="fa-regular fa-comment fa-lg mx-2" style="cursor: pointer; font-size: 20px;" onclick="window.location='post/'+ '{{post.id}}';"></i>
+            {% if user.is_authenticated %}
+                {% if user == post.poster %}
+                    <i class="fa-solid fa-pen-to-square mx-2" onclick="edit('{{post.id}}',this)", style="cursor: pointer; font-size: 20px;"></i>
+                    <i class="fa fa-trash mx-2" onclick="deletepost('{{post.id}}',this)" style="cursor: pointer; font-size: 20px;"></i>
+                {% endif %}
+            {% endif %}
+                
         </div>
     {% endfor %}
     <hr>

@@ -224,4 +224,10 @@ def comment(request, post_id):
             commie.commenter = request.user
             commie.save()
             return HttpResponseRedirect(reverse(post,args=[post_id]))
+        
+
+def search(request):
+    q = request.GET.get("q")
+    people = User.objects.filter(username__icontains=q)
+    return render(request,'network/search.html',{'people':people})
     

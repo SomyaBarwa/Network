@@ -41,50 +41,7 @@ catch(err) {
 }
 
 
-
 /*
-document.querySelector("#edit").onclick = () => {
-    const text = document.querySelector("h6");
-    console.log(text);
-}
-
-function edit(post) {
-    console.log(post);
-}
-*/
-
-/*
-document.querySelectorAll(".edit").forEach(button => {
-    button.addEventListener('click', () => {
-        const text = button.parentElement.querySelector("h6");
-        if(button.innerHTML == "Edit") {
-            const textarea = document.createElement("textarea");
-            textarea.className = "form-control";
-            console.log(text)
-            textarea.value = text.innerHTML;
-            text.replaceWith(textarea);
-            button.innerHTML = "Save";
-
-        }
-        else {
-            const textarea = document.querySelector("textarea")
-            fetch("/edit",{
-                method: "PUT",
-                body: JSON.stringify({id:button.dataset.id,
-                                    text:textarea.value
-                                })
-            })
-            .then(response => response.text())
-            .then(data => {
-                textarea.replaceWith(text);
-                button.innerHTML = "Edit";
-                text.innerHTML = textarea.value;
-            });
-        }
-    });
-});
-*/
-
 function edit(post_id,element) {
     txtbox = element.parentElement;
     if(element.innerHTML == "Edit") {
@@ -114,7 +71,38 @@ function edit(post_id,element) {
             text.innerHTML = textarea.value;
         });
     }
-}
+}*/
+
+function edit(post_id,element) {
+    txtbox = element.parentElement;
+    if(element.className == "fa-solid fa-pen-to-square mx-2") {
+        const text = txtbox.querySelector("pre");
+        const textarea = document.createElement("textarea");
+        textarea.className = "form-control";
+        textarea.value = text.innerHTML;
+        text.replaceWith(textarea);
+        element.className = "fa-solid fa-floppy-disk mx-2";
+
+    }
+    else {
+        const textarea = txtbox.querySelector("textarea")
+        fetch("/edit",{
+            method: "PUT",
+            body: JSON.stringify({id:post_id,
+                                text:textarea.value
+                            })
+        })
+        .then(response => response.text())
+        .then(data => {
+            const text = document.createElement("pre");
+            text.style = "font-size: large; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;"
+            textarea.replaceWith(text);
+            element.className = "fa-solid fa-pen-to-square mx-2";
+            text.innerHTML = textarea.value;
+        });
+    }
+}   
+
 
 function deletepost(post_id,element) {
     fetch("/delete",{
@@ -167,3 +155,14 @@ function heart(post_id,element) {
     }
 }
 
+
+function showupdateform(element) {
+    if(element.parentElement.parentElement.querySelector('#update_profile').style.display=="none") {
+        element.parentElement.parentElement.querySelector('#update_profile').style.display="block";
+        element.innerHTML = "Cancel";
+    }
+    else {
+        element.parentElement.parentElement.querySelector('#update_profile').style.display="none";
+        element.innerHTML = "Update Profile";
+    }
+}
